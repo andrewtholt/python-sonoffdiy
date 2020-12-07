@@ -12,7 +12,7 @@ def usage():
 
 async def switchMain(loop,state):
     tryAgain = True
-    count = 3
+    count = 4
 
 #    print(state)
 
