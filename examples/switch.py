@@ -8,7 +8,7 @@ import sys
 from sonoffdiy import SonoffDIY
 
 def usage():
-    print("switch")
+    print("Usage: switch.py -h|--help -v|--verbose -c <cfg file>| --config=<cfg file> -o <out|off> | --output=<on|off>" )
 
 async def switchMain(loop,state):
     tryAgain = True
@@ -42,8 +42,11 @@ async def switchMain(loop,state):
 
 def main():
 
+    configFile = "/etc/HomeAutomation/config.json"
+    name = ""
+
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "out="])
+        opts, args = getopt.getopt(sys.argv[1:], "c:ho:vn:", ["config=","help", "out=","name="])
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -53,13 +56,21 @@ def main():
     state = "error"
 
     for o, a in opts:
-        if o == "-v":
+        if o in ("-v","--verbose"):
             verbose = True
+        elif o in ("-c", "--config"):
+            configFile = a
         elif o in ("-h", "--help"):
             usage()
             sys.exit(0)
         elif o in ("-o", "--out"):
             state = a
+        elif o in ("-n", "--name"):
+            name = a
+
+    if verbose:
+        print("Outlet name     :" + name )
+        print("Requested state :" + state )
 
     if  state == "on":
         loop = asyncio.get_event_loop()
