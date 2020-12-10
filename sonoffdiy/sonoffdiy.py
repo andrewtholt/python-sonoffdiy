@@ -130,6 +130,24 @@ class SonoffDIY:
         self.info = Info.from_dict(self.device_id, data)
         return self.info
 
+    async def update_info_json(self):
+        """Get all information about the Sonoff DIY device."""
+        try:
+            data = await self._request("info")
+            signal_strength = await self._request("signal_strength")
+        except SonoffDIYError as exception:
+            self.info = None
+            raise exception
+
+        if data is None:
+            self.info = None
+            raise SonoffDIYError("Did not receive data from Sonoff DIY device")
+
+        if signal_strength is not None:
+            data.update(signal_strength)
+
+        return json.dumps(data)
+
     async def turn_on(self) -> None:
         """Turn on Sonoff DIY device."""
         await self._request("switch", {"switch": STATE_ON})

@@ -4,27 +4,31 @@
 
 import asyncio
 import getopt
-import sys
 import json
-
 import os.path
+import sys
+
 from sonoffdiy import SonoffDIY
 
-def usage():
-    print("Usage: switch.py -h|--help -v|--verbose -c <cfg file>| --config=<cfg file> -o <out|off> | --output=<on|off>" )
 
-async def switchMain(loop,ip,deviceID,state):
+def usage():
+    print(
+        "Usage: switch.py -h|--help -v|--verbose -c <cfg file>| --config=<cfg file> -o <out|off> | --output=<on|off>"
+    )
+
+
+async def switchMain(loop, ip, deviceID, state):
     tryAgain = True
     count = 4
 
     """Show example on controlling your Sonoff DIY device."""
-    while tryAgain == True:
+    while tryAgain:
         try:
-#            async with SonoffDIY("192.168.10.169", device_id="1000c8c4b5", loop=loop) as diy:
+            #            async with SonoffDIY("192.168.10.169", device_id="1000c8c4b5", loop=loop) as diy:
             async with SonoffDIY(ip, device_id=deviceID, loop=loop) as diy:
                 info = await diy.update_info()
-        
-                if state == 'on':
+
+                if state == "on":
                     await diy.turn_on()
                 else:
                     await diy.turn_off()
@@ -45,7 +49,9 @@ def main():
     test = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "c:ho:vn:t", ["config=","help", "out=","name=","test"])
+        opts, args = getopt.getopt(
+            sys.argv[1:], "c:ho:vn:t", ["config=", "help", "out=", "name=", "test"]
+        )
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -55,7 +61,7 @@ def main():
     state = "error"
 
     for o, a in opts:
-        if o in ("-v","--verbose"):
+        if o in ("-v", "--verbose"):
             verbose = True
         elif o in ("-c", "--config"):
             configFile = a
@@ -66,48 +72,45 @@ def main():
             state = a
         elif o in ("-n", "--name"):
             name = a
-        elif o in ("-t","--test"):
+        elif o in ("-t", "--test"):
             test = True
             verbose = True
 
     if verbose:
-        print("Outlet name     :" + name )
-        print("Requested state :" + state )
+        print("Outlet name     :" + name)
+        print("Requested state :" + state)
 
         if test:
             print("Test")
 
-
-    if not os.path.isfile(configFile) :
+    if not os.path.isfile(configFile):
         print("Config file " + configFile + " does not exist")
         sys.exit(1)
 
     with open(configFile) as cf:
         config = json.load(cf)
-        print(config['SonoffDIY'])
+        print(config["SonoffDIY"])
 
-        sonoff = config['SonoffDIY']
+        sonoff = config["SonoffDIY"]
 
-        if sonoff.get( name ):
+        if sonoff.get(name):
             print("Name :" + name)
-            ip = sonoff['test']['ip']
-            deviceID = sonoff['test']['device_id']
+            ip = sonoff["test"]["ip"]
+            deviceID = sonoff["test"]["device_id"]
 
             print("\tIP        :" + ip)
             print("\tDevice ID :" + deviceID)
         else:
             print(name + " not found")
 
-
     valid = False
     if not test:
-        if state in ("on","off"):
+        if state in ("on", "off"):
             loop = asyncio.get_event_loop()
-            loop.run_until_complete(switchMain(loop,ip,deviceID,state))
+            loop.run_until_complete(switchMain(loop, ip, deviceID, state))
         else:
             print("Invalid state ", state)
             sys.exit(3)
 
 
 main()
-
