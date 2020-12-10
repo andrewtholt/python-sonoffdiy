@@ -7,17 +7,73 @@ import json
 import sys
 from time import sleep
 
+import getopt
+import os.path
+
 from sonoffdiy import SonoffDIY
 
+def usage():    
+    print("Usage: info.py -h|--help -v|--verbose -n <name> | --name=<name> -c <cfg file>| --config=<cfg file>")
+    
+def readConfig(fname):
+    if not os.path.isfile(fname):    
+        print("Config file " + fname + " does not exist")    
+        sys.exit(1)
+
+    with open(fname) as cf:    
+        config = json.load(cf)    
+    
+        sonoff = config["SonoffDIY"]    
+
+        return(sonoff)
+    
 
 async def infoMain(loop):
     tryAgain = True
     count = 4
 
+    configFile = "/etc/HomeAutomation/config.json"    
+    name = ""     
+    
+    verbose = False
+
+    try:    
+        opts, args = getopt.getopt( sys.argv[1:], "c:hvn:", ["config=", "help",  "name="])
+    except getopt.GetoptError as err:    
+        print(err)    
+        usage()       
+        sys.exit(2)    
+            
+    for o, a in opts:    
+        if o in ("-v", "--verbose"):    
+            verbose = True
+        elif o in ("-c", "--config"):
+            configFile = a
+        elif o in ("-h", "--help"):
+            usage()
+            sys.exit(0)
+        elif o in ("-n", "--name"):
+            name = a
+
+    sonoff = readConfig( configFile )
+
+    ip=""
+    deviceID=""
+    if sonoff.get(name):    
+        print("Name :" + name)    
+        ip = sonoff["test"]["ip"]    
+        deviceID = sonoff["test"]["device_id"]    
+
+        print("\tIP        :" + ip)    
+        print("\tDevice ID :" + deviceID)    
+    else:    
+        print(name + " not found")
+        tryAgain = False
+
     while tryAgain:
         try:
             async with SonoffDIY(
-                "192.168.10.169", device_id="1000c8c4b5", loop=loop
+                ip, device_id=deviceID, loop=loop
             ) as diy:
                 info = await diy.update_info_json()
                 print(info)
@@ -36,7 +92,7 @@ async def infoMain(loop):
                 print("Tried and failed.")
                 sys.exit(1)
             else:
-                sleep(0.1)
+                sleep(0.2)
 
 
 def main():

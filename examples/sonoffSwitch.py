@@ -12,9 +12,7 @@ from sonoffdiy import SonoffDIY
 
 
 def usage():
-    print(
-        "Usage: switch.py -h|--help -v|--verbose -c <cfg file>| --config=<cfg file> -o <out|off> | --output=<on|off>"
-    )
+    print( "Usage: switch.py -h|--help -v|--verbose  -n <name> | --name=<name> -c <cfg file>| --config=<cfg file> -o <out|off> | --output=<on|off>")
 
 
 async def switchMain(loop, ip, deviceID, state):
@@ -49,9 +47,7 @@ def main():
     test = False
 
     try:
-        opts, args = getopt.getopt(
-            sys.argv[1:], "c:ho:vn:t", ["config=", "help", "out=", "name=", "test"]
-        )
+        opts, args = getopt.getopt( sys.argv[1:], "c:ho:vn:t", ["config=", "help", "out=", "name=", "test"])
     except getopt.GetoptError as err:
         print(err)
         usage()
