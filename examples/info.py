@@ -14,6 +14,11 @@ from sonoffdiy import SonoffDIY
 
 def usage():    
     print("Usage: info.py -h|--help -v|--verbose -n <name> | --name=<name> -c <cfg file>| --config=<cfg file>")
+    print("")
+    print("\t-h|-help\t\tThis.")
+    print("\t-v|--verbose\t\tVerbose.")
+    print("\t-n <name>|--name=<name>\tName of the device to interogate.")
+    print("\t-c <cfg>|--config=<cfg>\tLoad this config file.")
     
 def readConfig(fname):
     if not os.path.isfile(fname):    

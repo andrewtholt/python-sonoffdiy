@@ -13,7 +13,12 @@ from sonoffdiy import SonoffDIY
 
 def usage():
     print( "Usage: switch.py -h|--help -v|--verbose  -n <name> | --name=<name> -c <cfg file>| --config=<cfg file> -o <out|off> | --output=<on|off>")
-
+    print("")
+    print("\t-h|-help\t\tThis.")    
+    print("\t-v|--verbose\t\tVerbose.") 
+    print("\t-n <name>|--name=<name>\tName of the device to control.")
+    print("\t-c <cfg>|--config=<cfg>\tLoad this config file.")
+    print("\t-o <on|off>|--out=<on|off>\tSet the device to this state.")
 
 async def switchMain(loop, ip, deviceID, state):
     tryAgain = True
