@@ -90,17 +90,19 @@ def main():
 
     with open(configFile) as cf:
         config = json.load(cf)
-        print(config["SonoffDIY"])
+        if verbose:
+            print(config["SonoffDIY"])
 
         sonoff = config["SonoffDIY"]
 
         if sonoff.get(name):
-            print("Name :" + name)
             ip = sonoff["test"]["ip"]
             deviceID = sonoff["test"]["device_id"]
 
-            print("\tIP        :" + ip)
-            print("\tDevice ID :" + deviceID)
+            if verbose:
+                print("Name :" + name)
+                print("\tIP        :" + ip)
+                print("\tDevice ID :" + deviceID)
         else:
             print(name + " not found")
 

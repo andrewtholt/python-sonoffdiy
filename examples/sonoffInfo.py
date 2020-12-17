@@ -64,13 +64,14 @@ async def infoMain(loop):
 
     ip=""
     deviceID=""
-    if sonoff.get(name):    
-        print("Name :" + name)    
+    if sonoff.get(name):
         ip = sonoff["test"]["ip"]    
         deviceID = sonoff["test"]["device_id"]    
 
-        print("\tIP        :" + ip)    
-        print("\tDevice ID :" + deviceID)    
+        if verbose:
+            print("Name :" + name)    
+            print("\tIP        :" + ip)    
+            print("\tDevice ID :" + deviceID)    
     else:    
         print(name + " not found")
         tryAgain = False
@@ -81,13 +82,20 @@ async def infoMain(loop):
                 ip, device_id=deviceID, loop=loop
             ) as diy:
                 info = await diy.update_info_json()
-                print(info)
+
+                tmp = json.loads(info)
+
+                if verbose:
+                    print(tmp)
+
+                print(tmp['switch'].upper())
             tryAgain = False
 
         except Exception as ex:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             print(message)
+
             tryAgain = False
 
         except SonoffDIYConnectionError:
